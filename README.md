@@ -1,6 +1,6 @@
-# AI Internship Recommendation Engine - Backend API
+# AI Internship Recommendation Engine
 
-A complete Node.js backend API for an AI-powered internship recommendation system with user authentication, profile management, and intelligent matching algorithms.
+A complete full-stack application for an AI-powered internship recommendation system with user authentication, profile management, and intelligent matching algorithms.
 
 ## 🚀 Features
 
@@ -311,3 +311,6 @@ For questions or issues, please open a GitHub issue or contact the development t
 ---
 
 **Built with ❤️ using Node.js, Express, and SQLite**
+=======
+# intern_backend
+>>>>>>> 311803f155a2a15f6887ba7fe7a3610d8db0bfef
