@@ -3,7 +3,28 @@
 
 A complete full-stack application for an AI-powered internship recommendation system with user authentication, profile management, and intelligent matching algorithms.
 
-## 🚀 Features
+## 🚀 Quick Deploy
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/aroraaryaman449-source/intern_backend.git
+   cd intern_backend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Update the variables as needed
+
+4. Run the application:
+   - Development mode: `npm run dev`
+   - Production mode: `npm run deploy`
+
+## 🌟 Features
 
 - **User Authentication**: JWT-based auth with bcrypt password hashing
 - **Profile Management**: Detailed user profiles with skills, interests, and education
