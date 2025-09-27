@@ -14,9 +14,11 @@
     "start": "node server.js",
     "setup": "node scripts/setup.js",
     "build": "tsc && vite build",
+    "build:backend": "npm install",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
+    "deploy:backend": "npm run build:backend && node server.js",
     "lint": "tsc -p convex -noEmit --pretty false && tsc -p . -noEmit --pretty false && convex dev --once && vite build"
   },
   "dependencies": {
