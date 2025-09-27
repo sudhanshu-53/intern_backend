@@ -4,7 +4,7 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/ai_internship_recommendation_engine_backend/' : '/',
+  base: '/intern_backend/',
   plugins: [
     react(),
     // The code below enables dev tools like taking screenshots of your site
