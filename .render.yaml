@@ -2,8 +2,12 @@ services:
   - type: web
     name: intern-backend
     env: node
+    region: oregon
+    plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
     disk:
       name: sqlite-data
       mountPath: /opt/render/project/src/data
@@ -17,3 +21,7 @@ services:
         sync: false
       - key: DB_PATH
         value: /opt/render/project/src/data/database.sqlite
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
