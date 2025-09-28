@@ -10,7 +10,7 @@ services:
     plan: starter
         repo: https://github.com/sudhanshu-53/intern_backend.git
     branch: main
-    buildCommand: npm install -g npm@latest && npm ci --production
+    buildCommand: npm install -g npm@9.6.7 && npm ci --omit=dev
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
