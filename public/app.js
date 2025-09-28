@@ -7,8 +7,8 @@
  */
 class PMInternshipPortal {
     constructor() {
-        // API Configuration
-        this.apiBaseUrl = 'http://localhost:3001/api';
+    // API Configuration (use relative path so the frontend works when served from the same origin)
+    this.apiBaseUrl = '/api';
         
         // User State
         this.currentLanguage = 'en';
@@ -350,7 +350,9 @@ class PMInternshipPortal {
             }
         }
 
-        this.setupEventListeners();
+    this.setupEventListeners();
+    // Fetch public data (internships) so the UI can show listings even when user is not logged in
+    await this.fetchPublicData();
         this.setupTTS();
         this.setupOfflineSupport();
         this.updateLanguageElements();
@@ -361,6 +363,18 @@ class PMInternshipPortal {
             this.showDashboard();
         } else {
             this.showLoginPage();
+        }
+    }
+
+    // Fetch public facing data required for the UI (run on startup)
+    async fetchPublicData() {
+        try {
+            const internships = await this.api.getInternships();
+            if (Array.isArray(internships)) {
+                this.internshipsData = internships;
+            }
+        } catch (err) {
+            console.warn('Failed to fetch public internships:', err);
         }
     }
 
