@@ -7,62 +7,61 @@ const router = express.Router();
 
 // Get user profile
 router.get('/', authenticateToken, (req, res) => {
-  db.get('SELECT * FROM users WHERE id = ?', [req.user.userId], (err, user) => {
-    if (err) {
-      return res.status(500).json({ error: 'Database error' });
-    }
+  try {
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const profileData = JSON.parse(user.profile_data || '{}');
     const profile = {
       id: user.id,
       name: user.name,
       email: user.email,
       phone: user.phone,
       role: user.role,
-      profile_data: JSON.parse(user.profile_data || '{}')
+      hasCompletedOnboarding: profileData.hasCompletedOnboarding || false,
+      ...profileData
     };
 
     res.json(profile);
-  });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 // Update user profile
 router.put('/', authenticateToken, (req, res) => {
-  const profileData = JSON.stringify(req.body);
+  try {
+    const profileData = {
+      ...req.body,
+      hasCompletedOnboarding: true // Set to true whenever profile is updated
+    };
 
-  db.run(
-    'UPDATE users SET profile_data = ? WHERE id = ?',
-    [profileData, req.user.userId],
-    function(err) {
-      if (err) {
-        return res.status(500).json({ error: 'Failed to update profile' });
-      }
+    const updateStmt = db.prepare('UPDATE users SET profile_data = ? WHERE id = ?');
+    updateStmt.run(JSON.stringify(profileData), req.user.userId);
 
-      // Fetch updated profile
-      db.get('SELECT * FROM users WHERE id = ?', [req.user.userId], (err, user) => {
-        if (err) {
-          return res.status(500).json({ error: 'Database error' });
-        }
+    // Fetch updated profile
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.userId);
 
-        const profile = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-          profile_data: JSON.parse(user.profile_data || '{}')
-        };
-
-        res.json({
-          success: true,
-          profile
-        });
-      });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  );
-});
 
-export default router;
+    const updatedProfile = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      ...profileData
+    };
+
+    res.json(updatedProfile);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
