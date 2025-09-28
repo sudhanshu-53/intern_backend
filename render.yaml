@@ -8,9 +8,13 @@ services:
     env: node
     region: oregon
     plan: starter
-        repo: https://github.com/sudhanshu-53/intern_backend.git
+    repo: https://github.com/sudhanshu-53/intern_backend.git
     branch: main
-    buildCommand: npm install -g npm@9.6.7 && npm ci --omit=dev
+    buildCommand: |
+      npm install -g npm@9.6.7
+      npm ci --omit=dev
+      node scripts/setup.js
+      node scripts/import_internships.js
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
@@ -21,13 +25,16 @@ services:
     envVars:
       - key: DB_PATH
         value: /data/database.sqlite
-        sync: false
       - key: JWT_SECRET
-        value: "REPLACE_WITH_A_STRONG_SECRET"
-        sync: false
+        value: "intern_portal_jwt_secret_key_2025"
       - key: NODE_ENV
         value: production
-        sync: false
+      - key: PORT
+        value: "3001"
+      - key: GEMINI_API_KEY
+        value: "your-gemini-api-key-here" # You can update this in Render dashboard
+      - key: CORS_ORIGINS
+        value: "https://*.onrender.com,http://localhost:*"
 
 # If you prefer to manage env vars through the Render dashboard, remove or blank out the
 # values above and add them in the Render UI instead.
