@@ -6,8 +6,13 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const dbPath = join(__dirname, '..', 'database.sqlite');
+const dbPath = process.env.DB_PATH || join(__dirname, '..', 'database.sqlite');
 const db = new sqlite3.Database(dbPath);
+
+// Ensure the database directory exists
+import { mkdir } from 'fs/promises';
+import { dirname as pathDirname } from 'path';
+await mkdir(pathDirname(dbPath), { recursive: true }).catch(() => {});
 
 export const initializeDatabase = () => {
   return new Promise((resolve, reject) => {

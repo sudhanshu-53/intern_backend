@@ -19,19 +19,37 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'https://parkerkai004-cloud.github.io'
-  ],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'],
   credentials: true
 }));
 app.use(express.json());
 
+// Serve frontend static files from public/
+import { join } from 'path';
+const publicPath = join(process.cwd(), 'public');
+app.use(express.static(publicPath));
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to AI Internship Backend API' });
+});
+
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Initialize database
 await initializeDatabase();
+
+// Test route
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to the Internship API' });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -54,9 +72,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// SPA fallback: serve index.html for unknown routes (so client-side routing works)
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    return res.sendFile(join(publicPath, 'index.html'));
+  }
+  next();
 });
 
 app.listen(PORT, () => {
