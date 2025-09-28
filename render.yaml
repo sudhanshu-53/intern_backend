@@ -7,7 +7,7 @@ services:
     name: intern-backend
     env: node
     runtime: node
-    nodeVersion: 18.17.0
+    nodeVersion: 18.18.0
     region: oregon
     plan: starter
     repo: https://github.com/sudhanshu-53/intern_backend.git
