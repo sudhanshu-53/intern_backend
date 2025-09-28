@@ -16,7 +16,11 @@ class PMInternshipPortal {
         this.isLoggedIn = false;
         this.userType = null; // 'student' or 'admin'
         this.token = localStorage.getItem('token');
-        
+        const storedCompletionStatus = localStorage.getItem('hasCompletedOnboarding');
+        if (storedCompletionStatus === 'true') {
+            this.userProfile.hasCompletedOnboarding = true;
+        }
+
         // UI State
         this.profileWizardStep = 1;
         this.voices = [];
@@ -41,7 +45,7 @@ class PMInternshipPortal {
             cvFile: null,
             cvFileName: null,
             cvFileSize: null,
-            hasCompletedOnboarding: false,
+            hasCompletedOnboarding: storedCompletionStatus === 'true',
             homeDistrict: 'Jaipur',
             homeState: 'Rajasthan'
         };
@@ -1099,17 +1103,23 @@ class PMInternshipPortal {
             });
         });
     }
-    saveProfile() {
+    async saveProfile() {
         if (!this.validateWizardStep(this.profileWizardStep)) return;
         this.saveStepData(this.profileWizardStep);
-        this.saveData();
-        this.closeModals();
-        this.showToast(this.languageData[this.currentLanguage].profile_complete, 'success');
-        if (!this.userProfile.hasCompletedOnboarding) {
-            this.userProfile.hasCompletedOnboarding = true;
-            this.saveData();
+        
+        try {
+            const updatedProfile = { ...this.userProfile, hasCompletedOnboarding: true };
+            await this.api.updateProfile(updatedProfile);
+            this.userProfile = updatedProfile;
+            localStorage.setItem('hasCompletedOnboarding', 'true');
+            
+            this.closeModals();
+            this.showToast(this.languageData[this.currentLanguage].profile_complete, 'success');
+            this.showDashboard();
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            this.showToast('Failed to save profile', 'error');
         }
-        this.showDashboard();
     }
     isProfileComplete() {
         return this.userProfile.name && this.userProfile.education && this.userProfile.skills.length > 0;
@@ -1504,7 +1514,7 @@ class PMInternshipPortal {
                 gap: 10px;
             }
             .btn-icon {
-                background: transparent;
+                               background: transparent;
                 border: none;
                 cursor: pointer;
                 font-size: 1.2rem;
@@ -1743,24 +1753,33 @@ class PMInternshipPortal {
         });
     }
 
-    handleUpdateInternship(id) {
-        const index = this.internshipsData.findIndex(i => i.id === id);
-        if (index === -1) return;
-    
-        this.internshipsData[index] = {
-            ...this.internshipsData[index],
-            title: document.getElementById('edit-internship-title').value,
-            organization: document.getElementById('edit-internship-org').value,
-            location: document.getElementById('edit-internship-location').value,
-            stipend: document.getElementById('edit-internship-stipend').value,
-            duration: document.getElementById('edit-internship-duration').value,
-            total_positions: parseInt(document.getElementById('edit-internship-positions').value),
-            description: document.getElementById('edit-internship-desc').value
-        };
-    
-        this.closeModals();
-        this.showToast('Internship updated successfully!', 'success');
-        this.loadAdminInternships();
+    async handleUpdateInternship(id) {
+        try {
+            const internshipData = {
+                title: document.getElementById('edit-internship-title').value,
+                organization: document.getElementById('edit-internship-org').value,
+                location: document.getElementById('edit-internship-location').value,
+                stipend: document.getElementById('edit-internship-stipend').value,
+                duration: document.getElementById('edit-internship-duration').value,
+                total_positions: parseInt(document.getElementById('edit-internship-positions').value),
+                description: document.getElementById('edit-internship-desc').value
+            };
+
+            // Update internship on the server first
+            await this.api.request(`/internships/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(internshipData)
+            });
+
+            // Reload internships from server to ensure consistency
+            await this.loadInternships();
+            
+            this.closeModals();
+            this.showToast('Internship updated successfully!', 'success');
+        } catch (error) {
+            console.error('Error updating internship:', error);
+            this.showToast('Failed to update internship', 'error');
+        }
     }
 
     showAddInternshipModal() {
@@ -2144,10 +2163,8 @@ class PMInternshipPortal {
         const systemPrompt = `You are 'PM Sahayak', a friendly and patient AI assistant for the PM Internship Scheme portal. Your audience is young students from rural and underserved areas of India, many of whom are first-time mobile and internet users. Your primary goal is to help them understand the portal and the concept of internships.
         **RULES:**
         1.  **Use Simple Language:** Avoid jargon and complex sentences. Be encouraging and supportive.
-        2.  **Stay Focused:** Your knowledge is strictly limited to explaining the portal's features (profile, recommendations), internship terms (stipend, duration, unpaid), and the application process.
-        3.  **Do Not Hallucinate:** If a question is outside your scope (e.g., "who is the prime minister?", "write me a poem"), politely state that you can only help with questions about the internship portal.
-        4.  **Language:** ${langInstruction}`;
-        
+        2.  **Stay Focused:** Your knowledge is strictly limited to explaining the portal's features (profile, recommendations), internship terms (stipend, duration, unpaid), and the application process.`;
+
         try {
             const botResponse = await this.getGeminiResponse(systemPrompt, userQuery);
             this.removeThinkingIndicator();
