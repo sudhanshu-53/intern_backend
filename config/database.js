@@ -48,7 +48,6 @@ export const initializeDatabase = () => {
           education_levels TEXT DEFAULT '[]',
           applied_count INTEGER DEFAULT 0,
           total_positions INTEGER DEFAULT 0,
-          applied_count INTEGER DEFAULT 0,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `);
