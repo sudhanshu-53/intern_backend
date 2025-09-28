@@ -6,7 +6,7 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const dbPath = process.env.DB_PATH || join(__dirname, '..', 'database.sqlite');
+const dbPath = process.env.DB_PATH || join(process.cwd(), 'database.sqlite');
 
 // Ensure the database directory exists
 import { mkdir } from 'fs/promises';
