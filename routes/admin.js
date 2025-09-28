@@ -150,4 +150,4 @@ router.get('/dashboard/stats', authenticateToken, requireAdmin, (req, res) => {
   });
 });
 
-export default router;
+export { router as Router };

@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import { db } from '../config/database.js';
 
 const router = express.Router();
+
+// Login route
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Register endpoint
@@ -92,4 +94,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-export default router;
+export { router as Router };

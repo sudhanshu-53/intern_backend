@@ -54,4 +54,4 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-export default router;
+export { router as Router };

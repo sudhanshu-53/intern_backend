@@ -23,7 +23,7 @@ export const loggedInUser = query({
     }
     const user = await ctx.db
       .query("users")
-      .filter(q => q.eq(q.field("_id"), userId))
+      .filter((q: any) => q.eq(q.field("_id"), userId))
       .first();
     return user;
   },

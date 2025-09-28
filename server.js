@@ -3,14 +3,14 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDatabase } from './config/database.js';
-import authRoutes from './routes/auth.js';
-import internshipRoutes from './routes/internships.js';
-import profileRoutes from './routes/profile.js';
-import recommendationRoutes from './routes/recommendations.js';
-import applicationRoutes from './routes/applications.js';
-import bookmarkRoutes from './routes/bookmarks.js';
-import chatRoutes from './routes/chat.js';
-import adminRoutes from './routes/admin.js';
+import { Router as authRoutes } from './routes/auth.js';
+import { Router as internshipRoutes } from './routes/internships.js';
+import { Router as profileRoutes } from './routes/profile.js';
+import { Router as recommendationRoutes } from './routes/recommendations.js';
+import { Router as applicationRoutes } from './routes/applications.js';
+import { Router as bookmarkRoutes } from './routes/bookmarks.js';
+import { Router as chatRoutes } from './routes/chat.js';
+import { Router as adminRoutes } from './routes/admin.js';
 
 dotenv.config();
 
@@ -42,16 +42,7 @@ app.get('/health', (req, res) => {
 // Initialize database
 await initializeDatabase();
 
-// Test route
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Internship API' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy' });
-});
-
-// Routes
+// Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/internships', internshipRoutes);
 app.use('/api/profile', profileRoutes);

@@ -1,0 +1,46 @@
+{
+  "internships": [
+    {
+      "id": 3,
+      "title": "Digital India Internship Scheme",
+      "organization": "Ministry of Electronics & IT (MeitY)",
+      "department": "Technology",
+      "location": "New Delhi",
+      "duration": "2 months",
+      "stipend": "10000",
+      "description": "Get hands-on experience working on live projects related to the Digital India mission.",
+      "required_skills": ["Programming", "Web Development", "Data Analysis"],
+      "interests": ["Technology", "Computer Science"],
+      "education_levels": ["Undergraduate", "Postgraduate"],
+      "total_positions": 15
+    },
+    {
+      "id": 4,
+      "title": "RGSA Internship Program",
+      "organization": "Ministry of Panchayati Raj (MoPR)",
+      "department": "Rural Development",
+      "location": "New Delhi",
+      "duration": "3 months",
+      "stipend": "7000",
+      "description": "Learn about governance at the village level (Panchayati Raj).",
+      "required_skills": ["Research", "Data Analysis", "Report Writing"],
+      "interests": ["Rural Development", "Public Policy"],
+      "education_levels": ["Undergraduate", "Postgraduate"],
+      "total_positions": 8
+    },
+    {
+      "id": 5,
+      "title": "Abhijit Sen Rural Internship",
+      "organization": "National Foundation for India (NFI)",
+      "department": "Rural Development",
+      "location": "Chhattisgarh",
+      "duration": "1.7 months",
+      "stipend": "20000",
+      "description": "A unique 50-day field-based research internship.",
+      "required_skills": ["Field Research", "Data Collection", "Analysis"],
+      "interests": ["Rural Development", "Social Impact"],
+      "education_levels": ["Undergraduate", "Postgraduate"],
+      "total_positions": 10
+    }
+  ]
+}

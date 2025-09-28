@@ -100,4 +100,4 @@ router.get('/', authenticateToken, (req, res) => {
   });
 });
 
-export default router;
+export { router as Router };

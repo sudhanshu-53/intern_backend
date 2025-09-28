@@ -138,4 +138,61 @@ router.delete('/:id', authenticateToken, (req, res) => {
   }
 });
 
-export default router;
+// Bulk update internships (admin only)
+router.put('/bulk/update', authenticateToken, (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
+
+  try {
+    const { internships } = req.body;
+    
+    if (!Array.isArray(internships)) {
+      return res.status(400).json({ error: 'Internships must be an array' });
+    }
+
+    const updateStmt = db.prepare(`
+      UPDATE internships SET
+        title = ?, organization = ?, department = ?, location = ?,
+        duration = ?, stipend = ?, description = ?, required_skills = ?,
+        interests = ?, education_levels = ?, total_positions = ?
+      WHERE id = ?
+    `);
+
+    db.transaction(() => {
+      const results = internships.map(internship => {
+        const {
+          id, title, organization, department, location, duration, stipend,
+          description, required_skills, interests, education_levels, total_positions
+        } = internship;
+
+        if (!id) {
+          throw new Error('Each internship must have an id');
+        }
+
+        const result = updateStmt.run(
+          title, organization, department, location, duration, stipend,
+          description,
+          JSON.stringify(required_skills || []),
+          JSON.stringify(interests || []),
+          JSON.stringify(education_levels || []),
+          total_positions || 0,
+          id
+        );
+
+        return {
+          id,
+          updated: result.changes > 0
+        };
+      });
+
+      return results;
+    })();
+
+    res.json({ message: 'Bulk update completed successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to bulk update internships: ' + err.message });
+  }
+});
+
+export { router as Router };

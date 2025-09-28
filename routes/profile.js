@@ -8,7 +8,7 @@ const router = express.Router();
 // Get user profile
 router.get('/', authenticateToken, (req, res) => {
   try {
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.userId);
+    const user = db.get('SELECT * FROM users WHERE id = ?', [req.user.userId]);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -40,28 +40,27 @@ router.put('/', authenticateToken, (req, res) => {
       hasCompletedOnboarding: true // Set to true whenever profile is updated
     };
 
-    const updateStmt = db.prepare('UPDATE users SET profile_data = ? WHERE id = ?');
-    updateStmt.run(JSON.stringify(profileData), req.user.userId);
+    db.run('UPDATE users SET profile_data = ? WHERE id = ?',
+      [JSON.stringify(profileData), req.user.userId],
+      function(err) {
+        if (err) {
+          console.error('Error updating profile:', err);
+          return res.status(500).json({ error: 'Failed to update profile' });
+        }
 
-    // Fetch updated profile
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.userId);
+        // Return updated profile
+        const profile = {
+          id: req.user.userId,
+          ...profileData
+        };
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const updatedProfile = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      ...profileData
-    };
-
-    res.json(updatedProfile);
+        res.json(profile);
+      }
+    );
   } catch (err) {
-    console.error('Database error:', err);
+    console.error('Error:', err);
     res.status(500).json({ error: 'Failed to update profile' });
   }
 });
+
+export { router as Router };
